@@ -1,0 +1,49 @@
+{
+  "person": {
+    "name": "Jane Smith",
+    "age": 28,
+    "email": "jane.smith@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "Los Angeles",
+      "zipcode": "90001",
+      "country": "USA"
+    },
+    "is_student": false,
+    "grades": {
+      "math": 95,
+      "science": 88,
+      "history": 78
+    },
+    "hobbies": ["reading", "traveling", "painting"],
+    "friends": [
+      {
+        "name": "Tom",
+        "age": 30,
+        "email": "tom@example.com"
+      },
+      {
+        "name": "Emily",
+        "age": 27,
+        "email": "emily@example.com"
+      }
+    ]
+  },
+  "company": {
+    "name": "ABC Corporation",
+    "address": {
+      "street": "456 Business Ave",
+      "city": "San Francisco",
+      "zipcode": "94105",
+      "country": "USA"
+    },
+    "employees": 150,
+    "is_public": true,
+    "departments": ["HR", "Finance", "Engineering", "Marketing"],
+    "revenue": {
+      "2021": 5000000,
+      "2022": 7000000,
+      "2023": 9000000
+    }
+  }
+}
