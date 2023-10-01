@@ -1,0 +1,108 @@
+import pandas as pd
+from prophet import Prophet
+import matplotlib.pyplot as plt
+%matplotlib inline
+import numpy as np
+import seaborn as sns
+
+# Calculate accuracy metrics
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+
+
+fore_df = pd.read_csv('aug_sept_data.csv')
+fore_df = fore_df[['date', 'orders']] 
+fore_df.rename(columns={'date': 'ds', 'orders': 'y'}, inplace=True)
+fore_df['y'] = fore_df['y'].str.replace(',', '', regex=True)
+fore_df['y'] = fore_df['y'].astype('Int64')
+fore_df['ds'] = pd.to_datetime(fore_df['ds'])
+
+main_df = pd.read_csv('main_data.csv')
+main_df.rename(columns={'date': 'ds', 'orders': 'y'}, inplace=True)
+
+#Combined dataframe
+combined_df = pd.concat([df,fore_df], ignore_index=True)
+
+#Train-test split
+train1, test1 =  main_df[1: main_df.shape[0]-57],  main_df[ main_df.shape[0]-57:]
+
+
+
+
+model2=Prophet(changepoint_prior_scale=0.08,  
+    seasonality_prior_scale=50.0, holidays_prior_scale=0.1)
+
+model2.fit(train1)
+
+future_data = test1[['ds']]
+
+# Make predictions for the last 20 data points
+prediction2 = model2.predict(future_data)
+
+pred2= prediction2['yhat'].copy()
+test1 = test1.reset_index(drop=True)
+test1['pred2'] = pred2.copy()
+
+
+from matplotlib import pyplot as plt
+%matplotlib inline
+import seaborn as sns
+
+# Create a line plot for the four lines
+sns.set_style("whitegrid")  
+plt.figure(figsize=(10, 6))  
+sns.lineplot(data=test1[['y', 'pred2']], dashes=False)
+
+
+
+# Calculate accuracy metrics
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+mae = mean_absolute_error(test1['y'], test1['pred2'])
+mse = mean_squared_error(test1['y'], test1['pred2'])
+rmse = np.sqrt(mse)
+mape = np.mean(np.abs((test1['y'] - test1['pred2']) / test1['y'])) * 100
+wmape = np.sum(np.abs(test1['y'] - test1['pred2'])) / np.sum(test1['y']) * 100
+
+# Print the accuracy metrics
+print(f'Mean Absolute Error (MAE): {mae}')
+print(f'Mean Squared Error (MSE): {mse}')
+print(f'Root Mean Squared Error (RMSE): {rmse}')
+print(f'Mean Absolute Percentage Error (MAPE): {mape}%')
+print(f'Weighted Mean Absolute Percentage Error (WMAPE): {wmape}%')
+
+plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
+
+# Plot the 'y' and 'pred2' columns
+plt.plot(test1['y'], label='y', marker='o', linestyle='-')
+plt.plot(test1['pred2'], label='pred2', marker='x', linestyle='--')
+
+# Add labels and a legend
+plt.xlabel('Time')
+plt.ylabel('Values')
+plt.title('Plot of y and pred2')
+plt.legend()
+
+# Show the plot
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+
+
+# User inputs a date in yyyy-mm-dd format
+user_input_date_str = input("Enter a date in yyyy-mm-dd format: ")
+
+# Convert the user input date string to a datetime object
+from datetime import datetime
+user_input_date = datetime.strptime(user_input_date_str, '%Y%m%d')
+
+# Find the forecasted value for the user's input date
+forecast_for_user_date = prediction2[prediction2['ds'] == user_input_date]['yhat'].values[0]
+
+# Print the forecasted value for the user's input date
+print(f"Forecasted Orders for {user_input_date_str}: {forecast_for_user_date}")
+
+
